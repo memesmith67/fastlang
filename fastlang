@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 #copyright john morris beck 2026 gpl2
 a="/tmp/.fastlang";
+b=",PROT_READ|PROT_WRITE,MAP_SHARED,";
 if [ ! -d "$a" ] ; then
 mkdir $a;
 printf '%s' "
@@ -18,7 +19,7 @@ char *s;
 int *p[256],r[256],main(int argc,char **argv){
     p['g']=(int*)(intptr_t)open(*argv,O_RDWR);
     ftruncate((int)(intptr_t)p['g'], 9999);
-    p['g']=(int*)mmap(0,9999,PROT_READ|PROT_WRITE,MAP_SHARED,(int)(intptr_t)p['g'],0);
+    p['g']=(int*)mmap(0,9999$b(int)(intptr_t)p['g'],0);
   p['t']=p['g'];
   while(42!=*(p['t']++)=getchar());
   p['t']=p['g'];
@@ -30,7 +31,7 @@ int *p[256],r[256],main(int argc,char **argv){
       c('m',p['g'][a]=p['g'][b])
       c('o',p[a]=(int*)(intptr_t)open(s,O_RDWR))
       c('t',ftruncate((int)(intptr_t)p[a],b))
-      c('a',p[a]=(int*)mmap(0,p[b][0],PROT_READ|PROT_WRITE,MAP_SHARED,(int)(intptr_t)p[b+1],0))
+      c('a',p[a]=(int*)mmap(0,p[b][0]$b(int)(intptr_t)p[b+1],0))
       c('f',munmap(p[a],b))
       c('c',memcpy(p[p['g'][a]],p[p['g'][a+1]],p['g'][a+2]))
       c('p',p[a]=p[b])
@@ -48,7 +49,7 @@ b="$$$1";
 awk  '\''
 $1=="elfc"{d["open"]=$3"=open("$4",O_RDWR)";
 d["ftruncate"]=$1"("$2","$3")";
-d["map"]=$3"=mmap(0,"$4",PROT_READ|PROT_WRITE,MAP_SHARED,"$5",0)";
+d["map"]=$3"=mmap(0,"$4"'"$b"'"$5",0)";
 d["munmap"]=$2"("$3","$4")";
 d["memcpy"]=$2"("$3","$4","$5")";
 d["var"]=$3" "$4;d["ctrl"]=$3"("$4"){";
