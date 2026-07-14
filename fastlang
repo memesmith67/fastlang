@@ -1,5 +1,54 @@
-macrosh(){ sh|sh;};cjit(){(trap 'rm -f "$1" "$1.c"' EXIT HUP INT TERM;if filcc -O2 -g -o "$1" "$1.c";then "$1"; fi)&};vm(){ printf %s '#include <stdio.h>
-#include <stdio.h>
+!#/usr/bin/env sh
+#copyright john morris beck 2026 gpl2
+cat << 'EOF' > /tmp/$$macrosh
+
 #include <stdlib.h>
-#include <string.h>
-int main(){int x,y,z,t=9999,s=sizeof(int);int *g=malloc(s*t),*h;while('\n'!=(g[--t]=getchar()));t++;while(1){h=g+t;z=h[0];x=h[1];y=h[2];switch(z){case 'q':exit(0);break;case '-':g[x]-=g[y];break;case '<':g[x]=g[x]<g[y];break;case 'r':g[y]=g[g[x]];break;case 'w':g[g[y]]=g[x];break;case 'a':h=realloc(g,s*g[x]);h==NULL?g[y]=0:(g=h);break;case 'i':z=g[x];while('\n'!=(*(g+z++)=getchar()));break;case 'o':z=g[x];while(*(g+z))putchar(*(g+z++));fflush(stdout);break;case 'x':t=g[x]-3;break;}t+=3;}}';} elfc(){ awk '{d["lib"]="#include <"$2".h>\n";d["open"]=$2"=open("$3",O_RDWR)";d["prep"]="ftruncate("$1","$2");d["map"]=$2"=mmap(0,"$3",PROT_READ|PROT_WRITE,MAP_SHARED,"$4",0)";d["free"]="munmap("$2","$3")";d["cpy"]="memcpy("$2","$3","$4")";d["var"]=$2" "$3;d["ctrl"]=$2"("$3"){";d["key"]="case "$2":";p=$2"=";for(i=3;i<=NF&&$1=="op";i++){p=p" "$i}d["op"]=p;d["get"]=$2"=*("$3"*)("$4")";d["set"]="*("$2"*)("$3")="$4;d["seek"]=$2"=(void*)((char*)"$2"+(intptr_t)"$3")";o=d[$1];if(!o){o=$0}print o";"}';}; #fastlang ©2026 john morris beck licensed gpl2 #change open,prep,map,unmap,&cpy 2 correct arch.
+#include <stdio.h>
+#define c(x,y) case x:y;break;
+#define a m[m[t+1]]
+#define b m[m[t+2]]
+int t=9999,*m,*n,main(){
+  m=malloc(8*t);
+  while(42!=m[--t]=getchar());
+  t++;
+  while(1){
+    switch(m[t]){
+    c('b',a=m[t+2])
+      c('-',a-=b)
+      c('<',a=a<b)
+      c('m',m[a]=m[b])
+      c('i',a=getchar())
+      c('o',putchar(a))
+      c('f',fflush(stdout))
+      c('x',t=a-3;)
+      c('a',n=realloc(m,8*a)?m=n:a=0)
+    default:
+      exit(0);}
+    t+=3;}}//copyright john morris beck 2026 gpl2"
+
+EOF
+
+macrosh() { tcc -run "/tmp/macrosh$$" | sh -c '
+
+elfc(){
+
+awk '"'"'
+
+$1=="elfc"{
+d["open"]=$3"=open("$4",O_RDWR)";
+d["prep"]="ftruncate("$2","$3")";
+d["map"]=$3"=mmap(0,"$4",PROT_READ|PROT_WRITE,MAP_SHARED,"$5",0)";
+d["munmap"]=$2"("$3","$4")";
+d["memcpy"]=$2"("$3","$4","$5")";
+d["var"]=$3" "$4;d["ctrl"]=$3"("$4"){";
+d["key"]="case "$3":";p=$3"=";for(i=3;
+i<=NF&&$2=="op";i++){p=p" "$i}d["op"]=p;
+d["get"]=$3"=*("$4"*)("$5")";
+d["set"]="*("$3"*)("$4")="$5;
+d["seek"]=$3"=(void*)((char*)"$3"+(intptr_t)"$4")";
+}
+{
+print $1=="elfc"?d[$3]:$0
+}#copyright john morris beck 2026 gpl2
+
+'"'"' | tcc -run -i ; } ; ' ; } ;
