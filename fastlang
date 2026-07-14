@@ -42,6 +42,10 @@ int *p[256],r[256],main(int argc,char **argv){
 ">"$a/macrosh.c";
 filcc "$a/macrosh.c" -o "$a/macrosh.exe";
 printf '%s' '
+#!/usr/bin/env sh
+a='"$a"';
+b="$$$1";
+awk  '\''
 $1=="elfc"{d["open"]=$3"=open("$4",O_RDWR)";
 d["ftruncate"]=$1"("$2","$3")";
 d["map"]=$3"=mmap(0,"$4",PROT_READ|PROT_WRITE,MAP_SHARED,"$5",0)";
@@ -54,12 +58,7 @@ d["get"]=$3"=*("$4"*)("$5")";
 d["set"]="*("$3"*)("$4")="$5;
 d["seek"]=$3"=(void*)((char*)"$3"+(intptr_t)"$4")"}
 {print $1=="elfc"?d[$3]:$0}#copyright 2026 john morris beck gpl2
-'>"$a/elfc.awk";
-printf '%s' '
-#!/usr/bin/env sh
-a='"$a"';
-b="$$$1";
-awk -f "$a/elfc.awk" - >$a/$b.c;
+'\'' - >$a/$b.c;
 trap '\''rm -f "$a/$b.exe"'\'' EXIT;
 filcc "$a/$b.c" -o $a/$b.exe;
 rm "$a/$b.c";
@@ -67,20 +66,18 @@ chmod +x "$a/$b.exe"
 $a/$b.exe& #copyright 2026 john morris beck gpl2
 '>"$a/elfc.sh";
 printf '%s' '
-#!/usr/bin/env sh
+#!/usr/bin/sh
+{
+printf "%s" '\''
 i=0;
 elfc(){
 i="$((i + 1))";
 /tmp/.fastlang/elfc.sh "$i";
-}; #copyright 2026 john morris beck gpl2
-'>"$a/rightshinit.sh";
-printf '%s' '
-#!/usr/bin/sh
-{
-  cat "/tmp/.fastlang/rightshinit.sh";
-  /tmp/.fastlang/macrosh.exe;
+};
+'\'';
+/tmp/.fastlang/macrosh.exe;
 } | sh; #copyright 2026 john morris beck
 '>"$a/fastlang.sh";
-chmod +x "$a/macrosh.exe" "$a/elfc.sh" "$a/rightshinit.sh" "$a/fastlang.sh";
+chmod +x "$a/macrosh.exe" "$a/elfc.sh" "$a/fastlang.sh";
 fi;
-fastlang(){ $a/fastlang.sh;};
+fastlang(){ "$a/fastlang.sh";};
