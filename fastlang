@@ -1,39 +1,45 @@
 #!/usr/bin/env sh
 #copyright john morris beck 2026 gpl2
-cat << 'EOF' > /tmp/.macrosh$$
-
+cat << 'EOF' > /tmp/.macrosh
 #include <stdlib.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdint.h>
+#include <sys/mman.h>
 #define c(x,y) case x:y;break;
-#define a m[m[t+1]]
-#define b m[m[t+2]]
-int t=9999,*m,*n,main(){
-  m=malloc(8*t);
-  while(42!=m[--t]=getchar());
-  t++;
+#define a r[p['g'][p['t']+1]]
+#define b r[p['g'][p['t']+2]]
+char *s;
+int *p[256],r[256],main(int argc,char **argv){
+    p['g']=(int*)(intptr_t)open(*argv,O_RDWR);
+    ftruncate((int)(intptr_t)p['g'], 9999);
+    p['g']=(int*)mmap(0,9999,PROT_READ|PROT_WRITE,MAP_SHARED,(int)(intptr_t)p['g'],0);
+  p['t']=p['g'];
+  while(42!=*(p['t']++)=getchar());
+  p['t']=p['g'];
   while(1){
-    switch(m[t]){
-    c('b',a=m[t+2])
+    switch(*p['t']){
+    c('b',a=*(p['t']+2))
       c('-',a-=b)
       c('<',a=a<b)
-      c('m',m[a]=m[b])
+      c('m',p['g'][a]=p['g'][b])
+      c('o',p[a]=(int*)(intptr_t)open(s,O_RDWR))
+      c('t',ftruncate((int)(intptr_t)p[a],b))
+      c('a',p[a]=(int*)mmap(0,p[b][0],PROT_READ|PROT_WRITE,MAP_SHARED,(int)(intptr_t)p[b+1],0))
+      c('f',munmap(p[a],b))
+      c('c',memcpy(p[p['g'][a]],p[p['g'][a+1]],p['g'][a+2]))
+      c('p',p[a]=p[b])
       c('i',a=getchar())
-      c('o',putchar(a))
-      c('f',fflush(stdout))
-      c('x',t=a-3)
-      c('a',n=realloc(m,8*a)?(m=n):(a=0))
+      c('x',p['t']=p['g']+a-3)
     default:
       exit(0);}
-    t+=3;}}//copyright john morris beck 2026 gpl2
-
+    p['t']+=3;}}//copyright john morris beck 2026 gpl2
 EOF
-
-macrosh() { tcc -run "/tmp/.macrosh$$" | sh -c '
-
+macrosh() { tcc -run "/tmp/.macrosh" | sh -c '
 elfc(){
-
-cat |awk '\''
-
+cat | ( awk '\''
 $1=="elfc"{
 d["open"]=$3"=open("$4",O_RDWR)";
 d["prep"]="ftruncate("$2","$3")";
@@ -49,17 +55,10 @@ d["seek"]=$3"=(void*)((char*)"$3"+(intptr_t)"$4")";
 }
 {
 print $1=="elfc"?d[$3]:$0
-}#copyright john morris beck 2026 gpl2
-
+} 
 '\'' > /tmp/.elfc$$.c;
-
-if
-	tcc -run "/tmp/.elfc$$.c";
-
-then
-
-rm "/tmp/.elfc$$.c" ;
-
-fi &
-
-} ' ; } ;
+trap rm "/tmp/.elfc$$.c" ;
+tcc -run "/tmp/.elfc$$.c";
+) &
+} ; #copyright john morris beck 2026 gpl2
+' ; } ;
