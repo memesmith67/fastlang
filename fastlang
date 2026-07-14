@@ -1,6 +1,6 @@
-!#/usr/bin/env sh
+#!/usr/bin/env sh
 #copyright john morris beck 2026 gpl2
-cat << 'EOF' > /tmp/$$macrosh
+cat << 'EOF' > /tmp/.macrosh$$
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,19 +20,19 @@ int t=9999,*m,*n,main(){
       c('i',a=getchar())
       c('o',putchar(a))
       c('f',fflush(stdout))
-      c('x',t=a-3;)
-      c('a',n=realloc(m,8*a)?m=n:a=0)
+      c('x',t=a-3)
+      c('a',n=realloc(m,8*a)?(m=n):(a=0))
     default:
       exit(0);}
-    t+=3;}}//copyright john morris beck 2026 gpl2"
+    t+=3;}}//copyright john morris beck 2026 gpl2
 
 EOF
 
-macrosh() { tcc -run "/tmp/macrosh$$" | sh -c '
+macrosh() { tcc -run "/tmp/.macrosh$$" | sh -c '
 
 elfc(){
 
-awk '"'"'
+cat |awk '\''
 
 $1=="elfc"{
 d["open"]=$3"=open("$4",O_RDWR)";
@@ -51,4 +51,15 @@ d["seek"]=$3"=(void*)((char*)"$3"+(intptr_t)"$4")";
 print $1=="elfc"?d[$3]:$0
 }#copyright john morris beck 2026 gpl2
 
-'"'"' | tcc -run -i ; } ; ' ; } ;
+'\'' > /tmp/.elfc$$.c;
+
+if
+	tcc -run "/tmp/.elfc$$.c";
+
+then
+
+rm "/tmp/.elfc$$.c" ;
+
+fi &
+
+} ' ; } ;
