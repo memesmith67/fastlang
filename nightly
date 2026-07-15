@@ -1,27 +1,17 @@
 #!/usr/bin/env sh
 #copyright john morris beck 2026 gpl2
-a="/tmp/.fastlang";
-if [ ! -d "$a" ] ; then
-mkdir "$a";
-filcc "$a/macrosh.c" -o "$a/macrosh.exe";
-printf '%s' '
-#!/usr/bin/env sh
+a="/tmp/.fastlang";if [ ! -d "$a" ];then mkdir "$a";
+printf '%s' '#!/usr/bin/env sh
 #copyright john morris beck 2026 gpl2
-a='"$a"';
-b="$$$1";
-{
-printf "%s" '\''
-i=0;
-elfc(){
-i="$((i + 1))";
-/tmp/.fastlang/elfc.sh "$i";
-};
-'\'';
+a='"$a"';b="$$$1";
+{printf "%s" '\'' i=0;
+elfc(){ i="$((i + 1))"; /tmp/.fastlang/elfc.sh "$i"; };'\'';
 awk  '\''
-BEGIN{b=",PROT_READ|PROT_WRITE,MAP_SHARED,";}
+BEGIN{b=",PROT_READ|PROT_WRITE,MAP_SHARED,(int)(intptr_t)";}
 function i(i){return substr($0,1+i,1)}
 function r(i){return "r["i"]"}
-$1=="c"{for(i(i=2;i<=NF;i++){printf "%s" $i}print}
+function p(i){return "p["i"]"}
+$1=="c"{for(i(i=2;i<=NF;i+=4){printf "%s" $i}print}
 $1!="c"{
 if(substr($1,1,1)!="#"){
 for(c=1;c<=length($0);c++){
@@ -29,34 +19,24 @@ d["-"]=r(i(2))"-="r(i(3));
 d["<"]=r(i(2))"="r(i(3))"<"r(i(4));
 d["f"]=r(i(2))"=open("r(i(3))",O_RDWR)";
 d["t"]="ftruncate("r(i(2))","r(i(3))")";
-d["a"]=p(i(2))"=(int*)mmap(0,r(i(3))"b"(int)(intptr_t)"r(i(4))",0)";
+d["a"]=p(i(2))"=(int*)mmap(0,r(i(3))"b r(i(4))",0)";
 d["d"]="munmap("p(i(3))","r(i(4))")";
 d["p"]=p(i(2))"="p(i(3));
 d["c"]="memcpy("p(i(2))","p(i(3))","r(i(4))")";
 d["b"]=r(i(2))"="i(3);
-d["i"]=xr(i(2))"=getchar()";
+d["i"]=r(i(2))"=getchar()";
 d["o"]="putchar("p(r(i(2)))"["r(i(3))"])";
 d["r"]=r(i(2))"=*("p(r(i(3)))")";
-d["w"]="*"p(r(i(3)))"="r(i(2))";
-d["\""]=for(int i=0;i<"r(i(2))";s[i]=*(*"p(r(i(4)))"+i++))";
-d["l"]=loop"(*"r(i(3))"){";
-d["switch"]=switch"("r(i(e))"){";
+d["w"]="*"p(r(i(3)))"="r(i(2));
+d["\""]="for(int i=0;i<"r(i(2))";s[i]=*(*"p(r(i(4)))"+i++))";
+d["l"]="while("r(i(2))"){";
+d["j"]="switch("r(i(2))"){";
 d["}"]="}";
 d[";"]="break";
-d["l"]="case "i(3)":"
+d["$"]="case "i(3)":"
 d["x"]="exit(0)"
-d[" "]="";
-t=d[substr($0,c,1);t==" "?0:print d[t]";"
-}
-}
-}
-'\'' - >$a/$b.c;
-trap '\''rm -f "$a/$b.exe"'\'' EXIT;
-filcc "$a/$b.c" -o $a/$b.exe;
-rm "$a/$b.c";
-chmod +x "$a/$b.exe";
-$a/$b.exe }|sh&
-'>"$a/elfc.sh";
-chmod +x "$a/elfc.sh";
-fi;
+print d[t]";"}}}'\'' - >$a/$b.c;
+trap '\''rm -f "$a/$b.exe"'\'' EXIT;filcc "$a/$b.c" -o $a/$b.exe;
+rm "$a/$b.c";chmod +x "$a/$b.exe";$a/$b.exe }|sh&
+'>"$a/fastlang";chmod +x "$a/fastlang.sh";fi;
 fastlang(){ {printf "%s" "$1";cat}|"$a/elfc.sh";};
