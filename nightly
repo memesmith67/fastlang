@@ -1,65 +1,63 @@
 #!/usr/bin/env sh
 #copyright john morris beck 2026 gpl2
-cat << 'EOF' > /tmp/.macrosh
-#include <stdlib.h>
-#include <stdio.h>
-#define c(x,y) case x:y;break;
-#define a r[p['g'][p['t']+1]]
-#define b r[p['g'][p['t']+2]]
-int *p[256],r[256],main(){
-
-
-//incomplete block 1
-    p['g']=open($4,O_RDWR))
-    ftruncate(p['g'],$3))
-    p['g']=mmap(0,$4,PROT_READ|PROT_WRITE,MAP_SHARED,$5,0))
-
-  while(42!=*--t=getchar());
-  t++;
-  while(1){
-    switch(*t){
-    c('b',a=*t+2)
-      c('-',a-=b)
-      c('<',a=a<b)
-      c('m',p['g'][a]=p['g'][b])
-
-//incomplete block 2
-      c('o',p[a]=open($4,O_RDWR))
-      c('t',ftruncate(m,$3))
-      c('a',p[a]=mmap(0,$4,PROT_READ|PROT_WRITE,MAP_SHARED,$5,0))
-      c('f',munmap(p[a],$4);
-      c('c',memcpy(p[a],p[b],$5)
-      c('g',m=p['a'])
-
-      C('i',a=getchar())
-      c('x',t=m+a-3)
-    default:
-      exit(0);}
-    t+=3;}}//copyright john morris beck 2026 gpl2
-EOF
-macrosh() { tcc -run "/tmp/.macrosh" | sh -c '
-elfc(){
-cat | ( awk '\''
-$1=="elfc"{
-d["open"]=$3"=open("$4",O_RDWR)";
-d["prep"]="ftruncate("$2","$3")";
-d["map"]=$3"=mmap(0,"$4",PROT_READ|PROT_WRITE,MAP_SHARED,"$5",0)";
-d["munmap"]=$2"("$3","$4")";
-d["memcpy"]=$2"("$3","$4","$5")";
-d["var"]=$3" "$4;d["ctrl"]=$3"("$4"){";
-d["key"]="case "$3":";p=$3"=";for(i=3;
-i<=NF&&$2=="op";i++){p=p" "$i}d["op"]=p;
-d["get"]=$3"=*("$4"*)("$5")";
-d["set"]="*("$3"*)("$4")="$5;
-d["seek"]=$3"=(void*)((char*)"$3"+(intptr_t)"$4")";
-}
+a="/tmp/.fastlang";
+if [ ! -d "$a" ] ; then
+mkdir "$a";
+filcc "$a/macrosh.c" -o "$a/macrosh.exe";
+printf '%s' '
+#!/usr/bin/env sh
+a='"$a"';
+b="$$$1";
 {
-print $1=="elfc"?d[$3]:$0
-} 
-'\'' > /tmp/.elfc$$.c;
-trap rm "/tmp/.elfc$$.c" ;
-tcc -run "/tmp/.elfc$$.c";
-) &
-} ; #copyright john morris beck 2026 gpl2
-' ; } ;
+printf "%s" '\''
+i=0;
+elfc(){
+i="$((i + 1))";
+/tmp/.fastlang/elfc.sh "$i";
+};
+'\'';
+awk  '\''
+BEGIN{b=",PROT_READ|PROT_WRITE,MAP_SHARED,";}
+function i(i){return substr($0,1+i,1)}
+function r(i){return "r["i"]"}
+$1=="c"{for(i(i=2;i<=NF;i++){printf "%s" $i}print}
+$1!="c"{
+if(substr($1,1,1)!="#"){
+for(c=1;c<=length($0);c++){
+d["-"]=r(i(2))"-="r(i(3));
+d["<"]=r(i(2))"="r(i(3))"<"r(i(4));
+d["f"]=r(i(2))"=open("r(i(3))",O_RDWR)";
+d["t"]="ftruncate("r(i(2))","r(i(3))")";
+d["a"]=p(i(2))"=(int*)mmap(0,r(i(3))"b"(int)(intptr_t)"r(i(4))",0)";
+d["d"]="munmap("p(i(3))","r(i(4))")";
+d["p"]=p(i(2))"="p(i(3));
+d["c"]="memcpy("p(i(2))","p(i(3))","r(i(4))")";
+d["b"]=r(i(2))"="i(3);
+d["i"]=r(i(2))"=getchar()";
+d["o"]="putchar("p(r(i(2)))"["r(i(3))"])";
+d["r"]=r(i(2))"=*("p(r(i(3)))")";
+d["w"]="*"p(r(i(3)))"="r(i(2))";
+d["\""]=for(int i=0;i<"r(i(2))";s[i]=*(*"p(r(i(4)))"+i++))";
+d["l"]=loop"(*"r(i(3))"){";
+d["switch"]=switch"("r(i(e))"){";
+d["}"]="}";
+d[";"]="break";
+d["l"]="case "i(3)":"
+print(substr($0,c,1))
 
+//need a function that hands control of stdin and stdout off
+
+
+}
+}
+}
+'\'' - >$a/$b.c;
+trap '\''rm -f "$a/$b.exe"'\'' EXIT;
+filcc "$a/$b.c" -o $a/$b.exe;
+rm "$a/$b.c";
+chmod +x "$a/$b.exe";
+$a/$b.exe }|sh& #copyright 2026 john morris beck gpl2
+'>"$a/elfc.sh";
+chmod +x "$a/elfc.sh";
+fi;
+fastlang(){ {printf "%s" "$1";cat}|"$a/elfc.sh";};
