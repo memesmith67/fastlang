@@ -15,8 +15,8 @@ printf '%s' "
 #define c(x,y) case x:y;break;
 #define a r[p['g'][p['t']+1]]
 #define b r[p['g'][p['t']+2]]
-char *s;
-int *p[256],r[256],main(int argc,char **argv){
+char s[2000];
+int i,**p[256],r[256],main(int argc,char **argv){
     p['g']=(int*)(intptr_t)open(*argv,O_RDWR);
     ftruncate((int)(intptr_t)p['g'], 9999);
     p['g']=(int*)mmap(0,9999$b(int)(intptr_t)p['g'],0);
@@ -25,17 +25,19 @@ int *p[256],r[256],main(int argc,char **argv){
   p['t']=p['g'];
   while(1){
     switch(*p['t']){
-    c('b',a=*(p['t']+2))
+    c('b',a=p['t'][2])
       c('-',a-=b)
       c('<',a=a<b)
       c('m',p['g'][a]=p['g'][b])
-      c('o',p[a]=(int*)(intptr_t)open(s,O_RDWR))
+      c('\"',for(i=0;i<b;s[i]=p['g'][p['t'][1]+i]))
+      c('O',p[a]=(int*)(intptr_t)open(s,O_RDWR))
       c('t',ftruncate((int)(intptr_t)p[a],b))
       c('a',p[a]=(int*)mmap(0,p[b][0]$b(int)(intptr_t)p[b+1],0))
       c('f',munmap(p[a],b))
       c('c',memcpy(p[p['g'][a]],p[p['g'][a+1]],p['g'][a+2]))
       c('p',p[a]=p[b])
       c('i',a=getchar())
+      c('o',putchar(p['g'][a]))
       c('x',p['t']=p['g']+a-3)
     default:
       exit(0);}
